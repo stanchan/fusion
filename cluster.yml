@@ -9,7 +9,7 @@
   gather_facts: false
   tasks:
     - pause:
-        seconds=30
+        minutes=5
 
 - name: Deploy fusion cluster
   hosts: fusion-cluster
