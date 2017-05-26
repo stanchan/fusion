@@ -1,11 +1,14 @@
 ---
-- hosts: fusion-zookeeper
+- name: Deploy zookeeper instances
+  hosts: fusion-zookeeper
   roles:
     - fusion
 
-- pause:
-  seconds: 30
+- name: Wait for zookeeper service
+  pause:
+    seconds: 30
 
-- hosts: fusion-cluster
+- name: Deploy fusion cluster
+  hosts: fusion-cluster
   roles:
     - fusion
