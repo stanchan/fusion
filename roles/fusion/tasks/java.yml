@@ -4,22 +4,32 @@
     repo: "{{ apt_java_repo }}"
     state: present
     update_cache: yes
+  tags:
+    - setup
 
 - name: Update GPG key for PPA repo
   command: apt-key adv --keyserver keyserver.ubuntu.com --recv-keys C2518248EEA14886
   become: yes
+  tags:
+    - setup
 
 - name: Accept Oracle License (select)
   debconf: name={{ apt_java_package }} question='shared/accepted-oracle-license-v1-1' value='true' vtype='select'
   ignore_errors: "{{ ansible_check_mode }}"
+  tags:
+    - setup
 
 - name: Accept Oracle License (seen)
   debconf: name={{ apt_java_package }} question='shared/accepted-oracle-license-v1-1' value='true' vtype='seen'
   ignore_errors: "{{ ansible_check_mode }}"
+  tags:
+    - setup
 
 - name: Install Java
   apt: name={{ apt_java_package }} state=present update_cache=yes force=yes cache_valid_time={{ apt_cache_valid_time }}
   ignore_errors: "{{ ansible_check_mode }}"
+  tags:
+    - setup
 
 - name: Update Java Security
   lineinfile:
@@ -28,3 +38,5 @@
     line: "        {{ item }}"
     insertbefore: "};"
   with_items: "{{ java_security_policies }}"
+  tags:
+    - setup

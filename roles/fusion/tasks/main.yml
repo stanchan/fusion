@@ -9,15 +9,21 @@
   retries: 3
   delay: 1
   ignore_errors: yes
+  tags:
+    - package
 
 - name: Retry if needed using command apt-get update
   command: apt-get update
   when: apt_result|failed
+  tags:
+    - package
 
 - name: Create fusion group
   group:
     name: "{{ fusion_group }}"
     state: present
+  tags:
+    - setup
 
 - name: Create fusion user
   user:
@@ -26,6 +32,8 @@
     group: "{{ fusion_user }}"
     createhome: no
     system: yes
+  tags:
+    - setup
 
 - include: java.yml
 
@@ -35,6 +43,8 @@
     dest: /etc/profile.d/java.sh
     mode: 0644
   when: java_home is defined and java_home != ""
+  tags:
+    - configs
 
 - stat:
     path: "{{ app_root }}/fusion/{{ fusion_version }}"
@@ -46,6 +56,8 @@
     dest: /tmp/
   register: fusion_bin_dl
   when: not fusion_bin.stat.exists
+  tags:
+    - deploy
 
 - name: Create lucidworks directory
   file:
@@ -54,6 +66,8 @@
     owner: "{{ fusion_user }}"
     group: "{{ fusion_user }}"
     recurse: yes
+  tags:
+    - setup
 
 - name: Unarchive fusion binary
   unarchive:
@@ -61,6 +75,9 @@
     src: "/tmp/{{ fusion_release_file }}"
     dest: "{{ app_root }}"
   when: not fusion_bin.stat.exists
+  notify: restart fusion
+  tags:
+    - deploy
 
 - name: Link fusion latest
   file:
@@ -69,6 +86,8 @@
     owner: "{{ fusion_user }}"
     group: "{{ fusion_user }}"
     state: link
+  tags:
+    - deploy
 
 - name: Link fusion bin
   file:
@@ -77,6 +96,8 @@
     owner: "{{ fusion_user }}"
     group: "{{ fusion_user }}"
     state: link
+  tags:
+    - deploy
 
 - name: Link fusion conf
   file:
@@ -85,6 +106,8 @@
     owner: "{{ fusion_user }}"
     group: "{{ fusion_user }}"
     state: link
+  tags:
+    - deploy
 
 - name: Link fusion var
   file:
@@ -93,6 +116,8 @@
     owner: "{{ fusion_user }}"
     group: "{{ fusion_user }}"
     state: link
+  tags:
+    - deploy
 
 - name: Make lucidworks directory readable
   file:
@@ -101,6 +126,9 @@
     group: "{{ fusion_user }}"
     mode: u=rwX,g=rX,o=rX
     recurse: yes
+  tags:
+    - setup
+    - configs
 
 - include: zookeeper.yml
   when: is_zk

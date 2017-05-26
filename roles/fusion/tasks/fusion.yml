@@ -5,6 +5,8 @@
     dest: "{{ app_root }}/fusion/conf/fusion.properties"
     mode: 0644
   notify: restart fusion
+  tags:
+    - configs
 
 - name: Change zookeeper directory permissions
   file:
@@ -13,6 +15,8 @@
     owner: "{{ fusion_user }}"
     group: "{{ fusion_user }}"
     recurse: yes
+  tags:
+    - configs
 
 - name: Apply fusion systemd unit file
   template:
@@ -20,6 +24,10 @@
     dest: "{{ systemd_root }}/fusion.service"
     mode: 0644
   notify: restart fusion
+  tags:
+    - configs
 
 - name: Start fusion service
   systemd: state=started name=fusion daemon_reload=yes enabled=yes
+  tags:
+    - configs

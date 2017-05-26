@@ -3,6 +3,8 @@
 #  group:
 #    name: "{{ zookeeper_group }}"
 #    state: present
+#  tags:
+#    - setup
 
 #- name: Create zookeeper user
 #  user:
@@ -11,6 +13,8 @@
 #    group: "{{ fusion_user }}"
 #    createhome: no
 #    system: yes
+#  tags:
+#    - setup
 
 - name: Create/update zookeeper configuration
   template:
@@ -18,6 +22,8 @@
     dest: "{{ app_root }}/fusion/conf/zookeeper/zoo.cfg"
     mode: 0644
   notify: restart fusion
+  tags:
+    - configs
 
 - name: Create zookeeper data directory
   file:
@@ -25,6 +31,8 @@
     state: directory
     owner: "{{ fusion_user }}"
     group: "{{ fusion_user }}"
+  tags:
+    - configs
 
 - name: Create/update myid file
   template:
@@ -32,6 +40,8 @@
     dest: "{{ app_root }}/fusion/{{ fusion_version }}/data/zookeeper/myid"
     mode: 0644
   notify: restart fusion
+  tags:
+    - configs
 
 #- name: Change zookeeper directory permissions
 #  file:
@@ -40,6 +50,8 @@
 #    owner: "{{ fusion_user }}"
 #    group: "{{ fusion_user }}"
 #    recurse: yes
+#  tags:
+#    - deploy
 
 #- name: Apply zookeeper systemd unit file
 #  template:
@@ -47,6 +59,10 @@
 #    dest: "{{ systemd_root }}/zookeeper.service"
 #    mode: 0644
 #  notify: restart zookeeper
+#  tags:
+#    - configs
 
 #- name: Start zookeeper service
 #  systemd: state=started name=zookeeper daemon_reload=yes enabled=yes
+#  tags:
+#    - configs

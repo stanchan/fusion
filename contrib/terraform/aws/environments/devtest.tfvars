@@ -15,13 +15,13 @@ aws_key_pair="schan3"
 
 #fusion Cluster
 aws_fusion_api_num = 3
-aws_fusion_api_size = "t2.small"
+aws_fusion_api_size = "t2.medium"
 aws_fusion_api_ami = "ami-221ea342"
 aws_fusion_indexer_num = 4
-aws_fusion_indexer_size = "t2.small"
+aws_fusion_indexer_size = "t2.medium"
 aws_fusion_indexer_ami = "ami-221ea342"
 aws_fusion_solr_num = 4
-aws_fusion_solr_size = "t2.small"
+aws_fusion_solr_size = "t2.medium"
 aws_fusion_solr_ami = "ami-221ea342"
 aws_fusion_zookeeper_num = 5
 aws_fusion_zookeeper_size = "t2.small"

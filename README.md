@@ -27,14 +27,24 @@ ansible-playbook -i ./inventory/devtest/hosts hosts.yml -b -v
 Login to the Bastion host to Run the following Ansible playbooks to setup the cluster.
 
 ```
+export ANSIBLE_ENV=devtest
 sudo su - root
 cd /opt/fusion
-ansible-playbook -i ./inventory/devtest/hosts prereqs.yml -b -v
-ansible-playbook -i ./inventory/devtest/hosts cluster.yml -b -v
+ansible-playbook -i ./inventory/${ANSIBLE_ENV}/hosts prereqs.yml -b -v
+ansible-playbook -i ./inventory/${ANSIBLE_ENV}/hosts cluster.yml -b -v
 ```
 
 ### Staging enviroment
 ```
-ansible-playbook -i ./inventory/staging/hosts prereqs.yml -b -v
-ansible-playbook -i ./inventory/staging/hosts cluster.yml -b -v
+export ANSIBLE_ENV=staging
+ansible-playbook -i ./inventory/${ANSIBLE_ENV}/hosts prereqs.yml -b -v
+ansible-playbook -i ./inventory/${ANSIBLE_ENV}/hosts cluster.yml -b -v
 ```
+
+### Starting services
+```
+export ANSIBLE_ENV=<env>
+ansible-playbook -i ./inventory/${ANSIBLE_ENV}/hosts start.yml -b -v
+```
+
+### Stopping services
