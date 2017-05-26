@@ -5,8 +5,10 @@
     - fusion
 
 - name: Wait for zookeeper service
-  pause:
-    seconds: 30
+  gather_facts: false
+  tasks:
+    - pause:
+        seconds=30
 
 - name: Deploy fusion cluster
   hosts: fusion-cluster
