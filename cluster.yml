@@ -5,6 +5,7 @@
     - fusion
 
 - name: Wait for zookeeper service
+  hosts: all
   gather_facts: false
   tasks:
     - pause:
