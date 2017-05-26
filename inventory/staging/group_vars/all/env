@@ -1,0 +1,6 @@
+---
+env: staging
+zk_jvm_options: -Xmx2g
+solr_jvm_options: -Xmx8g -Xms8g -Xss256k
+api_jvm_options: -Xmx4g -Xss256k
+connector_jvm_options: -Xmx8g -Xms4g -Xss256k

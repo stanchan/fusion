@@ -1,0 +1,45 @@
+---
+- name: Set is_zk if in fusion-zookeeper group
+  set_fact:
+    is_zk: "{{ inventory_hostname in groups['fusion-zookeeper'] }}"
+
+- name: Set is_solr if in fusion-solr group
+  set_fact:
+    is_solr: "{{ inventory_hostname in groups['fusion-solr'] }}"
+
+- name: Set is_fusion if in fusion-api group
+  set_fact:
+    is_fusion: "{{ inventory_hostname in groups['fusion-api'] }}"
+
+- name: Set is_indexer if in fusion-indexer group
+  set_fact:
+    is_indexer: "{{ inventory_hostname in groups['fusion-indexer'] }}"
+
+- name: Set default_services_items if is_zk
+  set_fact:
+    default_services: "{{ [item] + default_services }}"
+  with_items:
+    - zookeeper
+  when: is_zk
+
+- name: Set default_services_items if is_solr
+  set_fact:
+    default_services: "{{ [item] + default_services }}"
+  with_items:
+    - solr
+  when: is_solr
+
+- name: Set default_services_items if is_fusion
+  set_fact:
+    default_services: "{{ [item] + default_services }}"
+  with_items:
+    - api
+    - ui
+  when: is_fusion
+
+- name: Set default_services_items if is_indexer
+  set_fact:
+    default_services: "{{ [item] + default_services }}"
+  with_items:
+    - connectors
+  when: is_indexer

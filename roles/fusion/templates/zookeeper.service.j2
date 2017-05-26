@@ -1,0 +1,16 @@
+[Unit]
+Description=Zookeeper
+After=network.target
+
+[Service]
+Type=forking
+User={{ zookeeper_user }}
+Group={{ zookeeper_group }}
+SyslogIdentifier=zookeeper
+ExecStart={{ app_root }}/fusion/bin/zookeeper start
+ExecReload={{ app_root }}/fusion/bin/zookeeper restart
+ExecStop={{ app_root }}/fusion/bin/zookeeper stop
+Restart=on-abort
+
+[Install]
+WantedBy=multi-user.target

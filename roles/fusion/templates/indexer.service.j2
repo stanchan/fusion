@@ -1,0 +1,22 @@
+[Unit]
+Description=Lucidworks Fusion Indexer
+Requires=indexer.service
+After=indexer.service
+
+[Service]
+Type=forking
+Environment="FUSION_HOME={{ app_root }}/fusion"
+WorkingDirectory={{ app_root }}/fusion
+User={{ indexer_user }}
+Group={{ indexer_group }}
+ExecStart={{ app_root }}/fusion/bin/fusion run default
+ExecStop={{ app_root }}/fusion/bin/fusion stop default
+# To use a specific JVM, specify the JAVA_HOME directory:
+#Environment=JAVA_HOME=/usr/lib/jvm/java-8-oracle
+
+# Disable TimeoutStartSec, because the service does not signal completion
+TimeoutStartSec=0
+TimeoutStopSec=30
+
+[Install]
+WantedBy=multi-user.target

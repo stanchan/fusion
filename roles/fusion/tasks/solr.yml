@@ -1,0 +1,38 @@
+---
+- name: Create solr group
+  group:
+    name: "{{ solr_group }}"
+    state: present
+
+- name: Create solr user
+  user:
+    name: "{{ solr_user }}"
+    comment: "{{ solr_user }}"
+    group: "{{ solr_user }}"
+    createhome: no
+    system: yes
+
+- name: Change solr directory permissions
+  file:
+    path: "{{ app_root }}/fusion/{{ fusion_version }}"
+    state: directory
+    owner: "{{ solr_user }}"
+    group: "{{ solr_user }}"
+    recurse: yes
+
+- name: Create fusion config
+  template:
+    src: fusion.properties.j2
+    dest: "{{ app_root }}/fusion/conf/fusion.properties"
+    mode: 0644
+  notify: restart indexer
+
+- name: Apply solr systemd unit file
+  template:
+    src: solr.service.j2
+    dest: "{{ systemd_root }}/solr.service"
+    mode: 0644
+  notify: restart solr
+
+- name: Start solr service
+  systemd: state=started name=solr daemon_reload=yes enabled=yes

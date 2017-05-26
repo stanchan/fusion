@@ -1,0 +1,15 @@
+---
+#- name: restart zookeeper
+#  systemd: state=restarted name=zookeeper daemon_reload=yes
+#  when: is_zk
+
+#- name: restart solr
+#  systemd: state=restarted name=solr daemon_reload=yes
+#  when: is_solr
+
+#- name: restart indexer
+#  systemd: state=restarted name=indexer daemon_reload=yes
+#  when: is_indexer
+
+- name: restart fusion
+  systemd: state=restarted name=fusion daemon_reload=yes

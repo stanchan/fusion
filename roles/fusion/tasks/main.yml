@@ -1,0 +1,114 @@
+---
+- include: set_facts.yml
+  tags: facts
+
+- name: Run apt update
+  apt: update_cache=yes cache_valid_time=3600
+  register: apt_result
+  until: apt_result|success
+  retries: 3
+  delay: 1
+  ignore_errors: yes
+
+- name: Retry if needed using command apt-get update
+  command: apt-get update
+  when: apt_result|failed
+
+- name: Create fusion group
+  group:
+    name: "{{ fusion_group }}"
+    state: present
+
+- name: Create fusion user
+  user:
+    name: "{{ fusion_user }}"
+    comment: "{{ fusion_user }}"
+    group: "{{ fusion_user }}"
+    createhome: no
+    system: yes
+
+- include: java.yml
+
+- name: Set JAVA_HOME
+  template:
+    src: java.sh.j2
+    dest: /etc/profile.d/java.sh
+    mode: 0644
+  when: java_home is defined and java_home != ""
+
+- stat:
+    path: "{{ app_root }}/fusion/{{ fusion_version }}"
+  register: fusion_bin
+
+- name: Download fusion binary
+  get_url:
+    url: "{{ fusion_release_url }}"
+    dest: /tmp/
+  register: fusion_bin_dl
+  when: not fusion_bin.stat.exists
+
+- name: Create lucidworks directory
+  file:
+    path: "{{ app_root }}"
+    state: directory
+    owner: "{{ fusion_user }}"
+    group: "{{ fusion_user }}"
+    recurse: yes
+
+- name: Unarchive fusion binary
+  unarchive:
+    remote_src: true
+    src: "/tmp/{{ fusion_release_file }}"
+    dest: "{{ app_root }}"
+  when: not fusion_bin.stat.exists
+
+- name: Link fusion latest
+  file:
+    src: "{{ app_root }}/fusion/{{ fusion_version }}"
+    dest: "{{ app_root }}/fusion/latest"
+    owner: "{{ fusion_user }}"
+    group: "{{ fusion_user }}"
+    state: link
+
+- name: Link fusion bin
+  file:
+    src: "latest/bin"
+    dest: "{{ app_root }}/fusion/bin"
+    owner: "{{ fusion_user }}"
+    group: "{{ fusion_user }}"
+    state: link
+
+- name: Link fusion conf
+  file:
+    src: "latest/conf"
+    dest: "{{ app_root }}/fusion/conf"
+    owner: "{{ fusion_user }}"
+    group: "{{ fusion_user }}"
+    state: link
+
+- name: Link fusion var
+  file:
+    src: "latest/var"
+    dest: "{{ app_root }}/fusion/var"
+    owner: "{{ fusion_user }}"
+    group: "{{ fusion_user }}"
+    state: link
+
+- name: Make lucidworks directory readable
+  file:
+    path: "{{ app_root }}"
+    owner: "{{ fusion_user }}"
+    group: "{{ fusion_user }}"
+    mode: u=rwX,g=rX,o=rX
+    recurse: yes
+
+- include: zookeeper.yml
+  when: is_zk
+
+#- include: solr.yml
+#  when: is_solr
+
+#- include: indexer.yml
+#  when: is_indexer
+
+- include: fusion.yml

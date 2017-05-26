@@ -1,0 +1,33 @@
+---
+fusion_version: 3.0.1
+fusion_version_full: "{{ fusion_version }}"
+fusion_release_file: "fusion-{{ fusion_version }}.tar.gz"
+#fusion_release_url: "https://download.lucidworks.com/{{ fusion_release_file }}"
+fusion_release_url: "https://usearch-files.s3-accelerate.amazonaws.com/fusion/{{ fusion_release_file }}"
+fusion_user: fusion
+fusion_group: fusion
+#zookeeper_user: zookeeper
+#zookeeper_group: zookeeper
+#solr_user: solr
+#solr_group: solr
+#indexer_user: indexer
+#indexer_group: indexer
+app_root: /opt/lucidworks
+systemd_root: /lib/systemd/system
+
+apt_cache_valid_time: 600
+#apt_java_repo: ppa:webupd8team/java
+apt_java_repo: "deb http://ppa.launchpad.net/webupd8team/java/ubuntu trusty main"
+apt_java_package: oracle-java8-installer
+install_java: "true"
+java_security_policies: []
+java_home: ""
+
+zk_port: 9983
+zk_connect: 2888
+zk_elect: 3888
+zk_jvm_options: -Xmx256m
+solr_jvm_options: -Xmx2g -Xss256k
+api_jvm_options: -Xmx1g -Xss256k
+connector_jvm_options: -Xmx1g -Xss256k
+default_services: []

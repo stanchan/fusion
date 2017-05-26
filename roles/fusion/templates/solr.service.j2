@@ -1,0 +1,24 @@
+[Unit]
+Description=Solr
+After=syslog.target network.target remote-fs.target nss-lookup.target systemd-journald-dev-log.socket
+Before=multi-user.target graphical.target nginx.service
+Conflicts=shutdown.target
+
+[Service]
+User={{ solr_user }}
+Group={{ solr_group }}
+SyslogIdentifier=solr
+LimitAS=infinity
+LimitRSS=infinity
+LimitCORE=infinity
+LimitNOFILE=65536
+ExecStart={{ app_root }}/fusion/bin/solr start
+ExecReload={{ app_root }}/fusion/bin/solr restart
+ExecStop={{ app_root }}/fusion/bin/solr stop
+Restart=on-failure
+PrivateTmp=true
+RemainAfterExit=yes
+SuccessExitStatus=143 0
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,38 @@
+---
+- name: Create indexer group
+  group:
+    name: "{{ indexer_group }}"
+    state: present
+
+- name: Create indexer user
+  user:
+    name: "{{ indexer_user }}"
+    comment: "{{ indexer_user }}"
+    group: "{{ indexer_user }}"
+    createhome: no
+    system: yes
+
+- name: Change indexer directory permissions
+  file:
+    path: "{{ app_root }}/fusion/{{ fusion_version }}"
+    state: directory
+    owner: "{{ indexer_user }}"
+    group: "{{ indexer_user }}"
+    recurse: yes
+
+- name: Create fusion config
+  template:
+    src: fusion.properties.j2
+    dest: "{{ app_root }}/fusion/conf/fusion.properties"
+    mode: 0644
+  notify: restart indexer
+
+- name: Apply indexer systemd unit file
+  template:
+    src: indexer.service.j2
+    dest: "{{ systemd_root }}/indexer.service"
+    mode: 0644
+  notify: restart indexer
+
+- name: Start indexer service
+  systemd: state=started name=indexer daemon_reload=yes enabled=yes

@@ -1,0 +1,52 @@
+---
+#- name: Create zookeeper group
+#  group:
+#    name: "{{ zookeeper_group }}"
+#    state: present
+
+#- name: Create zookeeper user
+#  user:
+#    name: "{{ fusion_user }}"
+#    comment: "{{ fusion_user }}"
+#    group: "{{ fusion_user }}"
+#    createhome: no
+#    system: yes
+
+- name: Create/update zookeeper configuration
+  template:
+    src: zoo.cfg.j2
+    dest: "{{ app_root }}/fusion/conf/zookeeper/zoo.cfg"
+    mode: 0644
+  notify: restart fusion
+
+- name: Create zookeeper data directory
+  file:
+    path: "{{ app_root }}/fusion/{{ fusion_version }}/data/zookeeper"
+    state: directory
+    owner: "{{ fusion_user }}"
+    group: "{{ fusion_user }}"
+
+- name: Create/update myid file
+  template:
+    src: myid.j2
+    dest: "{{ app_root }}/fusion/{{ fusion_version }}/data/zookeeper/myid"
+    mode: 0644
+  notify: restart fusion
+
+#- name: Change zookeeper directory permissions
+#  file:
+#    path: "{{ app_root }}/fusion/{{ fusion_version }}"
+#    state: directory
+#    owner: "{{ fusion_user }}"
+#    group: "{{ fusion_user }}"
+#    recurse: yes
+
+#- name: Apply zookeeper systemd unit file
+#  template:
+#    src: zookeeper.service.j2
+#    dest: "{{ systemd_root }}/zookeeper.service"
+#    mode: 0644
+#  notify: restart zookeeper
+
+#- name: Start zookeeper service
+#  systemd: state=started name=zookeeper daemon_reload=yes enabled=yes

@@ -1,0 +1,72 @@
+# Uncomment and change this address to point to external Zookeeper or ensemble
+# If you have external Zk and don't want to run Zk as part of Fusion service
+# then make sure to remove "zookeeper" service from "group.default" (see below)
+{% if is_zk %}# default.zk.connect = localhost:9983{% else %}{% set comma = joiner(",") %}default.zk.connect = {% for host in groups["fusion-zookeeper"] %}{{ comma() }}{{ hostvars[host]['ansible_eth0']['ipv4']['address'] }}:{{ zk_port }}{% endfor %}{% endif %}
+
+
+# Uncomment and change this address if you want to use external SolrCloud cluster
+# Make sure to remove "solr" service from "group.default" (see below)
+{% if is_zk %}# default.solrZk.connect = localhost:2181/solr-zk-namespace{% else %}{% set comma = joiner(",") %}default.solrZk.connect = {% for host in groups["fusion-zookeeper"] %}{{ comma() }}{{ hostvars[host]['ansible_eth0']['ipv4']['address'] }}:{{ zk_port }}{% endfor %}/lwfusion/{{ fusion_version_full }}/solr{% endif %}
+
+
+# the list of services that should be started with "bin/fusion start"
+# optional services are spark-master, spark-worker, sql
+#group.default = zookeeper, solr, api, connectors, ui
+group.default = {% set comma = joiner(", ") %}{% for service in default_services %}{{ comma() }}{{ service }}{% endfor %}
+
+
+# "address" is the ip / hostname that is used for inter-node or inter-component communication
+# Usually this address is published to Zk so that nodes/components can discover each other
+# By default it is one non localhost ip address discovered programmatically
+#default.address = 127.0.0.1
+default.address = {{ ansible_eth0.ipv4.address }}
+
+
+# garbage collection options can be "cms", "g1", "throughput" or "parallel", "serial" or "none"
+default.gc = cms
+# enable garbage collection logs
+default.gcLog = true
+# set to "none" to disable supervision
+default.supervision.type = standard
+
+# Agent process
+agent.port = 8091
+
+# API service
+api.port = 8765
+api.stopPort = 7765
+api.jvmOptions={{ api_jvm_options }}
+
+# Connectors service
+connectors.port = 8984
+connectors.stopPort = 7984
+connectors.jvmOptions={{ connector_jvm_options }}
+
+# Zookeeper
+zookeeper.port = {{ zk_port }}
+zookeeper.start = true
+zookeeper.jvmOptions={{ zk_jvm_options }}
+
+# Solr
+solr.port = 8983
+solr.stopPort = 7983
+solr.jvmOptions = {{ solr_jvm_options }}
+
+# Spark master
+spark-master.port = 8766
+spark-master.uiPort = 8767
+spark-master.jvmOptions = -Xmx512m
+
+# Spark worker
+spark-worker.port = 8769
+spark-worker.uiPort = 8770
+spark-worker.jvmOptions = -Xmx1g
+
+# UI
+ui.port = 8764
+ui.stopPort = 7764
+ui.jvmOptions = -Xmx512m
+
+# SQL engine
+sql.port = 8768
+sql.jvmOptions = -Xmx1g
