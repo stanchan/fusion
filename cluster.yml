@@ -3,6 +3,9 @@
   roles:
     - fusion
 
+- pause:
+  seconds: 30
+
 - hosts: fusion-cluster
   roles:
     - fusion

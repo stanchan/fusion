@@ -27,7 +27,7 @@ ansible-playbook -i ./inventory/devtest/hosts hosts.yml -b -v
 Login to the Bastion host to Run the following Ansible playbooks to setup the cluster.
 
 ```
-sudo - root
+sudo su - root
 cd /opt/fusion
 ansible-playbook -i ./inventory/devtest/hosts prereqs.yml -b -v
 ansible-playbook -i ./inventory/devtest/hosts cluster.yml -b -v
